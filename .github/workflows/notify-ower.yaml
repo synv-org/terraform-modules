@@ -1,0 +1,19 @@
+name: Notify Specified Code Owner
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+
+jobs:
+  notify-reviewer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Notify Specific Owner
+        uses: ./.github/actions/notify-owner
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
