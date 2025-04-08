@@ -1,0 +1,33 @@
+# .github/actions/terraform-ci/action.yml
+name: 'Terraform CI Steps'
+description: 'Runs terraform fmt, init, and validate'
+
+# add inputs if you want to customize (e.g. working directory)
+inputs:
+  working-directory:
+    description: 'Directory containing Terraform configuration'
+    required: false
+    default: '.'
+  fmt_continue_on_error:
+    description: 'Whether to continue on terraform fmt error'
+    required: false
+    default: 'true'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Terraform Format Check
+      run: terraform fmt -check -recursive -diff
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      continue-on-error: ${{ inputs.fmt_continue_on_error == 'true' }}
+
+    - name: Terraform Init
+      run: terraform init
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+
+    - name: Terraform Validate
+      run: terraform validate
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}

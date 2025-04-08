@@ -1,0 +1,20 @@
+name: Notify Owner
+description: Notify a specific Code Owner to review a PR
+inputs:
+  github-token:
+    description: 'GitHub token'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Notify Specific Owner
+      shell: bash
+      run: |
+        CODEOWNERS_LINE=$(cat .github/CODEOWNERS | grep -v "#" | head -n 1 | sed -e 's/* //')
+        CODEOWNERS_LIST=$(echo $CODEOWNERS_LINE | sed 's/@/\@/g')
+        PR_NUMBER=${{ github.event.pull_request.number }}
+        COMMENT_BODY="Attention: ${CODEOWNERS_LIST}, please review this PR"
+        echo "Posting comment to PR #$PR_NUMBER"
+        gh pr comment $PR_NUMBER --body "$COMMENT_BODY"
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
